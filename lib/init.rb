@@ -1,34 +1,27 @@
-require_relative 'pollen'
-require_relative 'harvest'
-require 'csv'
+# coding: utf-8
+require_relative 'statistic_calculator'
+require 'terminal-table'
 
-pollens = []
-
-CSV.foreach('data/pollens.csv') do |row|
-  next if row[0] == 'id'
-  pollens << Pollen.new(row[0].to_i, row[1], row[2].to_i)
+def make_table(hash, column_1, column_2)
+  Terminal::Table.new rows: hash.sort_by { |k, v| v }.reverse.to_h.to_a, headings: [column_1, column_2]
 end
 
-harvest = []
-harvest_amount = {}
-pollens.each do |pollen|
-  harvest_amount[pollen.name] = 0
+puts 'Выберите нужный показатель'
+puts 'Введите 1, чтобы узнать, из какой пыльцы было получено больше всего сахара'
+puts 'Введите 2, чтобы узнать самую популярную пыльцу'
+puts 'Введите 3, чтобы узнать урожай по дням'
+puts 'Введите 4, чтобы узнать эффективность пчел'
+
+stat = StatisticCalculator.new('data/pollens.csv', 'data/harvest.csv')
+stat.call
+
+case gets.chomp
+  when '1'
+    puts stat.sugar_amount.max_by { |k,v| v }
+  when '2'
+    puts stat.harvest_amount.max_by { |k,v| v }
+  when '3'
+    puts make_table(stat.sugar_by_day, 'День', 'Количество сахара')
+  when '4'
+    puts make_table(stat.sugar_by_bee, 'ИД пчелы', 'Среднее количество сахара в день')
 end
-
-CSV.foreach('data/harvest.csv') do |line|
-  next if line[0] == 'bee_id'
-  harvest << Harvest.new(line[0].to_i, line[1], line[2].to_i, line[3].to_f)
-  pollens.each do |pollen|
-    harvest_amount[pollen.name] += line[3].to_f if line[2].to_i == pollen.id
-  end
-end
-
-puts harvest_amount.max_by{|k,v| v }
-
-sugar_amount = {}
-
-harvest_amount.each do |key, value|
-  pollen = pollens.select { |pollen| pollen.name == key }
-  sugar_amount[key] = value * pollen.first.sugar_per_mg
-end
-puts sugar_amount.max_by{|k,v| v }

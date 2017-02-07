@@ -1,8 +1,10 @@
 class Harvest
-  def initialize(bee_id, day, pollen_id, miligrams_harvested)
+  attr_reader :bee_id, :day, :pollen_id, :milligrams_harvested
+
+  def initialize(bee_id, day, pollen_id, milligrams_harvested)
     @bee_id	= bee_id
     @day = day
     @pollen_id = pollen_id
-    @miligrams_harvested = miligrams_harvested
+    @milligrams_harvested = milligrams_harvested
   end
 end
