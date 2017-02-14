@@ -4,13 +4,13 @@ require 'csv'
 
 describe StatisticCalculator do
   before do
-    CSV.open('data/pollens.csv', "w") do |csv|
+    CSV.open('spec/data/pollens.csv', "w") do |csv|
       csv << %w(id name sugar_per_mg)
       csv << %w(1 Canola 10)
       csv << %w(2 Bluebell 3)
     end
 
-    CSV.open('data/harvest.csv', "w") do |csv|
+    CSV.open('spec/data/harvest.csv', "w") do |csv|
       csv << %w(bee_id day pollen_id miligrams_harvested)
       csv << %w(1, 2013-04-01 1 100)
       csv << %w(1 2013-04-02 2 200)
@@ -19,7 +19,7 @@ describe StatisticCalculator do
     end
   end
 
-  subject { StatisticCalculator.new('data/pollens.csv', 'data/harvest.csv') }
+  subject { StatisticCalculator.new('spec/data/pollens.csv', 'spec/data/harvest.csv') }
 
   describe '#.call' do
     before do
